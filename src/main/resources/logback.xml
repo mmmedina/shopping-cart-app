@@ -16,7 +16,7 @@
 
     <!-- Root logger configuration -->
     <root level="INFO">
-        <appender-ref ref="ASYNC" />
+        <appender-ref ref="ASYNC"/>
     </root>
 
     <logger name="PoolManager" level="INFO" additivity="false">
