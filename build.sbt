@@ -4,7 +4,7 @@ val http4sVersion = "0.23.6"
 val circeVersion = "0.14.9"
 
 lazy val root = (project in file(".")).settings(
-  name := "cats-effect-3-quick-start",
+  name := "shopping-cart-app",
   libraryDependencies ++= Seq(
     // effects
     "org.typelevel" %% "cats-effect" % "3.2.9",
