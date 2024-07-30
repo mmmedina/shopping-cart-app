@@ -20,10 +20,7 @@ Application to add item's, provided by an external API, to a shopping cart
 1 sbt clean compile
 2 sbt run
 ```
-This will start the project on localhost:8083
-
-There are some examples in the Main file, and some tests to see some covered cases.
-
+There is an example in the main file, and some tests to see some cases covered.
 
 >### Preconditions to execute request
-- Nothing
+- No precondition is necessary
