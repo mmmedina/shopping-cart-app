@@ -1,30 +1,34 @@
-package com.siriusxm.example.shoppingCart
+package com.siriusxm.example.service
 
 import cats.effect.IO
 import cats.implicits._
 import com.siriusxm.example.client.ProductsClient
 import com.siriusxm.example.model.Item
-import scala.collection.mutable.ListBuffer
 import org.slf4j.Logger
 
-class ShoppingCart(productClient: ProductsClient)(implicit val log: Logger) {
-  private val items: ListBuffer[Item] = ListBuffer.empty // TODO replace by cache or database
+case class ShoppingCartService(productClient: ProductsClient, items: List[Item] = List.empty)(implicit
+    val log: Logger
+) {
 
-  def addItems(givenItems: List[Item]): IO[Unit] = {
-
+  def addItems(givenItems: List[String]): IO[ShoppingCartService] = {
     log.info(s"Adding items... $givenItems")
 
-    givenItems.traverse_ { item =>
-      productClient.getByName(s"${item.title.toLowerCase}.json").attempt.flatMap {
-        case Left(error) =>
-          IO(log.error(s"Error trying to add ${item.title} to the cart. Message: ${error.getMessage}"))
-        case Right(product) =>
-          IO {
-            log.info(s"Adding item $product to the cart")
-            items += product
-          }
+    givenItems
+      .traverse { title =>
+        productClient.getByName(s"${title.toLowerCase}.json").attempt.flatMap {
+          case Left(error)    =>
+            IO {
+              log.warn(s"Error trying to add $title to the cart. Message: ${error.getMessage}")
+              None
+            }
+          case Right(product) =>
+            IO {
+              log.info(s"Adding item $product to the cart")
+              Some(product)
+            }
+        }
       }
-    }
+      .map { results => this.copy(items = items ++ results.flatten) }
   }
 
   def listItems: IO[Map[Item, Int]] = IO {

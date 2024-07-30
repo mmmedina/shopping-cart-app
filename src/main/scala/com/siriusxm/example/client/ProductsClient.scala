@@ -17,11 +17,15 @@ class ProductsClient(implicit log: Logger) {
       .flatMap { responseBody =>
         decode[Item](responseBody) match {
           case Right(item) =>
-            log.info(s"Received the product ${item.title} successfully")
-            IO.pure(item)
+            IO {
+              log.info(s"Received the product ${item.title} successfully")
+              item
+            }
           case Left(error) =>
-            log.warn(s"Failed to parse Json. Error: ${error.getCause}")
-            IO.raiseError(new RuntimeException(s"Failed to parse JSON: $error"))
+            IO.raiseError {
+              log.warn(s"Failed to parse Json. Error: ${error.getCause}")
+              new RuntimeException(s"Failed to parse JSON: $error")
+            }
         }
       }
 
